@@ -7,6 +7,8 @@ import {
   type DiagnosisResult,
   type ActionType,
   type AccidentType,
+  type DiagnosisLog,
+  type DiagnosisLogResult,
   initialEquipment,
   generatePetCase,
   generateInitialCases,
@@ -27,6 +29,7 @@ interface GameState {
   selectedMedicineId: string | null
   showMedicineSelector: boolean
   pendingAction: 'medicate' | 'inject' | 'feed' | null
+  diagnosisLogs: DiagnosisLog[]
 
   selectCase: (id: string) => void
   examine: () => void
@@ -43,6 +46,7 @@ interface GameState {
   generateNewCase: () => void
   loadTestCases: () => void
   resetGame: () => void
+  addDiagnosisLog: (log: Omit<DiagnosisLog, 'id' | 'timestamp'>) => void
 }
 
 const initialPlayer: Player = {
@@ -100,6 +104,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   selectedMedicineId: null,
   showMedicineSelector: false,
   pendingAction: null,
+  diagnosisLogs: [],
 
   selectCase: (id: string) => {
     const state = get()
@@ -181,6 +186,20 @@ export const useGameStore = create<GameState>((set, get) => ({
         showMedicineSelector: false,
         selectedMedicineId: null,
         pendingAction: null,
+      })
+
+      get().addDiagnosisLog({
+        petName: activeCase.petName,
+        breedId: activeCase.breedId,
+        diseaseName: disease?.name || '',
+        diseaseId: activeCase.diseaseId,
+        actionTaken: action,
+        medicineUsed: id,
+        result: 'funds',
+        income: 0,
+        symptomIds: activeCase.symptomIds,
+        correctAction: disease?.correctAction || 'medicate',
+        correctMedicine: disease?.medicineId || null,
       })
       return
     }
@@ -265,6 +284,20 @@ export const useGameStore = create<GameState>((set, get) => ({
         selectedMedicineId: null,
         pendingAction: null,
       })
+
+      get().addDiagnosisLog({
+        petName: activeCase.petName,
+        breedId: activeCase.breedId,
+        diseaseName: disease.name,
+        diseaseId: disease.id,
+        actionTaken: action,
+        medicineUsed: medicineId || null,
+        result: 'success',
+        income: netCoins,
+        symptomIds: activeCase.symptomIds,
+        correctAction: disease.correctAction,
+        correctMedicine: disease.medicineId,
+      })
     } else {
       const penalty = getPenaltyForAccident(activeCase.urgency)
       const totalDeduction = penalty + medicineCost
@@ -324,6 +357,20 @@ export const useGameStore = create<GameState>((set, get) => ({
         showMedicineSelector: false,
         selectedMedicineId: null,
         pendingAction: null,
+      })
+
+      get().addDiagnosisLog({
+        petName: activeCase.petName,
+        breedId: activeCase.breedId,
+        diseaseName: disease.name,
+        diseaseId: disease.id,
+        actionTaken: action,
+        medicineUsed: medicineId || null,
+        result: 'misdiagnosis',
+        income: -totalDeduction,
+        symptomIds: activeCase.symptomIds,
+        correctAction: disease.correctAction,
+        correctMedicine: disease.medicineId,
       })
     }
   },
@@ -392,6 +439,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       showMedicineSelector: false,
       selectedMedicineId: null,
       pendingAction: null,
+      diagnosisLogs: [],
     })
   },
 
@@ -414,6 +462,17 @@ export const useGameStore = create<GameState>((set, get) => ({
       showMedicineSelector: false,
       selectedMedicineId: null,
       pendingAction: null,
+      diagnosisLogs: [],
     })
+  },
+
+  addDiagnosisLog: (log: Omit<DiagnosisLog, 'id' | 'timestamp'>) => {
+    const state = get()
+    const newLog: DiagnosisLog = {
+      ...log,
+      id: `log_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+      timestamp: Date.now(),
+    }
+    set({ diagnosisLogs: [newLog, ...state.diagnosisLogs] })
   },
 }))

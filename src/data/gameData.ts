@@ -77,6 +77,24 @@ export interface DiagnosisResult {
   errorType: 'action' | 'medicine' | 'funds' | null
 }
 
+export type DiagnosisLogResult = 'success' | 'misdiagnosis' | 'funds'
+
+export interface DiagnosisLog {
+  id: string
+  petName: string
+  breedId: string
+  diseaseName: string
+  diseaseId: string
+  actionTaken: ActionType
+  medicineUsed: string | null
+  result: DiagnosisLogResult
+  income: number
+  timestamp: number
+  symptomIds: string[]
+  correctAction: ActionType
+  correctMedicine: string | null
+}
+
 export const breeds: Breed[] = [
   { id: 'slime', name: '黏液球', emoji: '🟢', color: '#00ff88', shape: 'blob' },
   { id: 'tentacle', name: '触手怪', emoji: '🟣', color: '#7b61ff', shape: 'tentacles' },
