@@ -189,6 +189,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       })
 
       get().addDiagnosisLog({
+        caseId: activeCase.id,
         petName: activeCase.petName,
         breedId: activeCase.breedId,
         diseaseName: disease?.name || '',
@@ -286,6 +287,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       })
 
       get().addDiagnosisLog({
+        caseId: activeCase.id,
         petName: activeCase.petName,
         breedId: activeCase.breedId,
         diseaseName: disease.name,
@@ -360,6 +362,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       })
 
       get().addDiagnosisLog({
+        caseId: activeCase.id,
         petName: activeCase.petName,
         breedId: activeCase.breedId,
         diseaseName: disease.name,

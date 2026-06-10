@@ -81,6 +81,7 @@ export type DiagnosisLogResult = 'success' | 'misdiagnosis' | 'funds'
 
 export interface DiagnosisLog {
   id: string
+  caseId: string
   petName: string
   breedId: string
   diseaseName: string
